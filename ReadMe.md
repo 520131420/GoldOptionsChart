@@ -1,5 +1,66 @@
 代码尚未完善
 
+# 使用教程
+
+可按需下载文件
+
+> 单纯查看下载
+
+```
+data.js
+index.css
+index.html  #双击运行此文件即可
+```
+
+> 想要数据更新可下载全文件
+
+*必备文件*
+
+```
+data.js
+index.css
+index.html
+package.json
+updata.js
+```
+
+1.安装环境
+
+```
+nodejs官网：https://nodejs.org/zh-cn/download
+下载安装
+```
+
+[![pVUxqGF.png](https://s21.ax1x.com/2025/08/07/pVUxqGF.png)](https://imgse.com/i/pVUxqGF)
+
+2.安装依赖
+
+```
+npm i #确保你已经下载了package.json文件
+```
+
+[![pVUxTaV.png](https://s21.ax1x.com/2025/08/07/pVUxTaV.png)](https://imgse.com/i/pVUxTaV)
+
+3.运行更新数据脚本
+
+```
+node updata.js 2509
+```
+
+[![pVUxbPU.png](https://s21.ax1x.com/2025/08/07/pVUxbPU.png)](https://imgse.com/i/pVUxbPU)
+
+> 说明
+
+网页端更新数据代码（开发中）
+
+```
+node server.js
+```
+
+[![pVUz9IK.png](https://s21.ax1x.com/2025/08/07/pVUz9IK.png)](https://imgse.com/i/pVUz9IK)
+
+# 进阶api
+
 > 查询最新合约信息api：
 
 ```js
