@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8" />
   <title>黄金期权分布可视化</title>
@@ -10,12 +11,13 @@
   <link rel="stylesheet" href="index.css">
   <script src="data.js"></script>
 </head>
+
 <body>
   <div class="container">
     <div class="header">
       <h1>黄金期权分布可视化</h1>
       <div class="price-range">
-        价格范围: 
+        价格范围:
         <input type="number" id="minPrice" value="3000" placeholder="最小值">
         -
         <input type="number" id="maxPrice" value="3600" placeholder="最大值">
@@ -36,19 +38,19 @@
         </div>
         <input type="range" id="dataRange" min="50" max="200" step="10" value="200">
       </div>
-      
+
       <button class="control-btn" id="highlightMaxPain">高亮最大痛苦价格</button>
-      
+
       <div class="label-controls">
         <button class="control-btn" id="showStockLabels">显示存量值</button>
         <button class="control-btn" id="showChangeLabels">显示变动值</button>
       </div>
-      
+
       <div class="detail-controls">
         <button class="control-btn" id="toggleStep">切换步长 (当前: 5)</button>
         <!-- 新增阈值调整控制 -->
         <div style="margin-top:10px;">
-          变动值显示阈值: 
+          变动值显示阈值:
           <input type="number" id="changeThreshold" value="8" min="0" max="100" style="width:60px;">
           <button class="control-btn" id="setThreshold">设置</button>
         </div>
@@ -76,7 +78,7 @@
   </div>
 
 
-  <script>
+  <script defer>
     let minPrice = 3100;
     let maxPrice = 3800;
     let showStockLabels = true;
@@ -93,7 +95,7 @@
           oiField: options.oiField || 'atClose',
           useValueWeight: options.useValueWeight !== undefined ? options.useValueWeight : true
         };
-        
+
         this.rawData = rawData;
         this.normalizedOptions = [];
         this.maxPainResult = null;
@@ -108,22 +110,22 @@
 
         this.rawData.monthData.forEach(monthItem => {
           const optionType = monthItem.label === "Calls" ? "call" : "put";
-          
+
           if (monthItem.strikeData && Array.isArray(monthItem.strikeData)) {
             monthItem.strikeData.forEach(strikeItem => {
               const openInterest = this.parseNumber(strikeItem[this.config.oiField]);
-              
+
               if (openInterest < this.config.minOpenInterest) {
                 return;
               }
-              
+
               const strikePrice = this.parseNumber(strikeItem.strike);
               if (strikePrice < minPrice || strikePrice > maxPrice) {
                 return;
               }
-              
+
               const contractValue = openInterest * this.config.contractMultiplier;
-              
+
               this.normalizedOptions.push({
                 strike: strikePrice,
                 type: optionType,
@@ -141,12 +143,12 @@
         if (typeof value === 'number') {
           return value;
         }
-        
+
         if (typeof value === 'string') {
           const cleaned = value.replace(/[^0-9.-]/g, '');
           return parseFloat(cleaned) || 0;
         }
-        
+
         return 0;
       }
 
@@ -165,7 +167,7 @@
         });
 
         this.maxPainResult = this.findMaxPainPoint(painDetails);
-        
+
         return {
           maxPainPrice: this.maxPainResult.maxPrice,
           maxPainValue: this.maxPainResult.maxValue,
@@ -178,11 +180,11 @@
           if (option.type === 'call' && price <= option.strike) {
             return totalPain + (this.config.useValueWeight ? option.contractValue : option.openInterest);
           }
-          
+
           if (option.type === 'put' && price >= option.strike) {
             return totalPain + (this.config.useValueWeight ? option.contractValue : option.openInterest);
           }
-          
+
           return totalPain;
         }, 0);
       }
@@ -206,25 +208,25 @@
     // 处理数据为 ECharts 所需格式 - 新增变动值过滤
     function processChartData(data, optionType, maxItems = 200) {
       const target = data.monthData.find(item => item.label === optionType);
-      if (!target) return { 
-        strike: [], 
-        oi: [], 
-        change: [], 
-        originalData: [] 
+      if (!target) return {
+        strike: [],
+        oi: [],
+        change: [],
+        originalData: []
       };
-      
+
       // 原始数据处理
       let originalData = target.strikeData.map(item => ({
         strike: parseInt(item.strike),
         oi: parseInt(item.atClose.replace(/,/g, '')),
         change: parseInt(item.change.replace(/,/g, ''))
       }))
-      .filter(item => item.strike >= minPrice && item.strike <= maxPrice)
-      .sort((a, b) => a.strike - b.strike);
-      
+        .filter(item => item.strike >= minPrice && item.strike <= maxPrice)
+        .sort((a, b) => a.strike - b.strike);
+
       // 应用步长过滤
       originalData = originalData.filter(item => item.strike % stepSize === 0);
-      
+
       // 限制数据量
       let processedData = originalData;
       if (maxItems && maxItems > 0 && originalData.length > maxItems) {
@@ -232,7 +234,7 @@
         const half = Math.floor(maxItems / 2);
         let start = midIndex - half;
         let end = midIndex + (maxItems - half);
-        
+
         if (start < 0) {
           start = 0;
           end = maxItems;
@@ -241,14 +243,14 @@
           end = originalData.length;
           start = Math.max(0, end - maxItems);
         }
-        
+
         processedData = originalData.slice(start, end);
       }
-      
+
       // 排序数据（配合y轴反转）
       const sortedData = [...processedData].sort((a, b) => a.strike - b.strike);
-      
-      return { 
+
+      return {
         strike: sortedData.map(item => item.strike),
         oi: sortedData.map(item => item.oi),
         change: sortedData.map(item => item.change),
@@ -272,7 +274,7 @@
 
       // 标记线配置
       const markLines = [];
-      
+
       if (maxPainPrice) {
         markLines.push({
           name: '最大痛苦价格',
@@ -327,7 +329,7 @@
             axisLine: { lineStyle: { color: '#666' } },
             splitLine: { lineStyle: { color: '#333' } },
             min: 0,
-            max: function(value) {
+            max: function (value) {
               return value.max * 1.3;
             }
           },
@@ -335,19 +337,19 @@
             type: 'value',
             name: '变动',
             position: 'top',
-            axisLabel: { 
+            axisLabel: {
               color: '#ccc',
-              formatter: function(value) {
+              formatter: function (value) {
                 return value > 0 ? `+${value}` : value;
               }
             },
             axisLine: { lineStyle: { color: '#666' } },
             splitLine: { show: false },
-            min: function(value) {
+            min: function (value) {
               const range = Math.max(Math.abs(value.max), Math.abs(value.min)) * 2;
               return -range * 0.5;
             },
-            max: function(value) {
+            max: function (value) {
               const range = Math.max(Math.abs(value.max), Math.abs(value.min)) * 2;
               return range * 0.5;
             }
@@ -360,7 +362,7 @@
           axisLine: { lineStyle: { color: '#666' } },
           splitLine: { lineStyle: { color: '#333' } },
           markLine: { data: markLines },
-          inverse: false 
+          inverse: false
         },
         series: [
           {
@@ -377,7 +379,7 @@
               show: showStockLabels,
               position: 'right',
               color: mainColor,
-              formatter: function(params) {
+              formatter: function (params) {
                 return params.value.toString();
               }
             }
@@ -389,7 +391,7 @@
             xAxisIndex: 1,
             barWidth: '40%',
             itemStyle: {
-              color: function(params) {
+              color: function (params) {
                 return params.value >= 0 ? increaseColor : decreaseColor;
               },
               borderRadius: 0
@@ -398,10 +400,10 @@
             label: {
               show: showChangeLabels,
               position: 'right',
-              color: function(params) {
+              color: function (params) {
                 return params.value >= 0 ? increaseColor : decreaseColor;
               },
-              formatter: function(params) {
+              formatter: function (params) {
                 return params.value > 0 ? `+${params.value}` : params.value;
               }
             }
@@ -453,8 +455,8 @@
       const callImg = new Image();
       const putImg = new Image();
 
-      callImg.onload = function() {
-        putImg.onload = function() {
+      callImg.onload = function () {
+        putImg.onload = function () {
           // 计算合并后画布尺寸（预留标题区域）
           const titleHeight = 80; // 标题区域高度
           const canvasWidth = callImg.width + putImg.width;
@@ -504,8 +506,8 @@
       callImg.src = callImgData;
     }
 
-    
-    
+
+
     // 更新图表显示
     function updateCharts(maxItems = 200) {
       currentMaxItems = maxItems;
@@ -514,26 +516,44 @@
       document.getElementById('showChangeLabels').classList.toggle('active', showChangeLabels);
       document.getElementById('toggleStep').textContent = `切换步长 (当前: ${stepSize})`;
       document.getElementById('changeThreshold').value = changeThreshold;
-      
+
       const calculator = new GoldMaxPainCalculator(mockData);
       const painResult = calculator.calculate();
       maxPainPrice = painResult.maxPainPrice;
       document.getElementById('maxPainPrice').textContent = maxPainPrice || '无数据';
       document.getElementById('maxPainContracts').textContent = painResult.maxPainValue || '无数据';
-      
+
       callChartData = processChartData(mockData, 'Calls', maxItems);
       putChartData = processChartData(mockData, 'Puts', maxItems);
-      
+
       if (callChart) callChart.dispose();
       if (putChart) putChart.dispose();
-      
+
       callChart = initChart('callChart', 'Calls', callChartData);
       putChart = initChart('putChart', 'Puts', putChartData);
+    }
+
+    // 加载数据
+    function loadData() {
+      // 创建新的script元素
+      const script = document.createElement('script');
+
+      script.src = './data.js';
+
+      // 可选：设置其他属性
+      script.type = 'text/javascript';
+      script.async = false; // 异步加载
+      script.defer = false; // 不延迟执行
+
+      // 将新创建的script标签添加到页面中
+      document.head.appendChild(script);
     }
 
     // 页面初始化
     document.addEventListener('DOMContentLoaded', () => {
       try {
+        loadData();
+
         updateCharts(200);
 
         // 保存期权图 
@@ -542,7 +562,7 @@
         document.getElementById('dataRange').addEventListener('input', (e) => {
           updateCharts(parseInt(e.target.value));
         });
-        
+
         // 高亮最大痛苦价格
         document.getElementById('highlightMaxPain').addEventListener('click', () => {
           if (maxPainPrice) {
@@ -553,7 +573,7 @@
                 chartWrapper.scrollTop = index * 38;
               }
             };
-            
+
             scrollToPrice('callChart', maxPainPrice);
             scrollToPrice('putChart', maxPainPrice);
           }
@@ -564,7 +584,7 @@
           showStockLabels = !showStockLabels;
           updateCharts(currentMaxItems);
         });
-        
+
         // 变动值显示控制
         document.getElementById('showChangeLabels').addEventListener('click', () => {
           showChangeLabels = !showChangeLabels;
@@ -590,7 +610,7 @@
         document.getElementById('setPriceRange').addEventListener('click', () => {
           const newMin = parseInt(document.getElementById('minPrice').value);
           const newMax = parseInt(document.getElementById('maxPrice').value);
-          
+
           if (!isNaN(newMin) && !isNaN(newMax) && newMin < newMax) {
             minPrice = newMin;
             maxPrice = newMax;
@@ -613,5 +633,5 @@
     });
   </script>
 </body>
+
 </html>
-    

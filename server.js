@@ -10,7 +10,7 @@ console.log('开始初始化程序...');
 
 // 创建Express应用
 const app = express();
-const port = 3000;
+const port = 11462;
 
 // 中间件配置
 app.use(express.json());
@@ -97,9 +97,8 @@ async function fetchAndSaveData(url) {
     console.log('请求成功，状态码:', response.status);
 
     // 准备要写入的内容
-    const fileContent = `// CME Group数据 - 抓取时间: ${new Date().toISOString()}
+    const fileContent = `// CME Group数据 - 抓取时间: ${new Date().toString()}
 const mockData = ${JSON.stringify(response.data, null, 2)};
-export default mockData;
 `;
 
     // 确保data目录存在
@@ -112,7 +111,7 @@ export default mockData;
     }
 
     // 保存文件路径（带时间戳）
-    const timestamp = new Date().toISOString().replace(/:/g, '-');
+    const timestamp = new Date().toString().replace(/:/g, '-');
     const filePath = path.join(dataDir, `data-${timestamp}.js`);
 
     // 写入文件

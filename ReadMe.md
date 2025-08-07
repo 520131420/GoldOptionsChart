@@ -12,6 +12,8 @@ index.css
 index.html  #双击运行此文件即可
 ```
 
+或直接访问：`http://lingx.eu.org:11463`
+
 > 想要数据更新可下载全文件
 
 *必备文件*
@@ -23,6 +25,10 @@ index.html
 package.json
 updata.js
 ```
+
+或访问：`http://lingx.eu.org:11462/`
+**请勿频繁**使用此功能，可在`http://localhost:5244/%E9%BB%84%E9%87%91%E6%9C%9F%E6%9D%83%E5%9B%BE/%E7%94%B5%E8%84%91%E8%BF%90%E8%A1%8C%E7%89%88%E6%9C%AC%EF%BC%88%E5%90%AB%E6%95%B0%E6%8D%AE%E6%9B%B4%E6%96%B0%E4%BB%A3%E7%A0%81%EF%BC%89/data`
+**中查看历史下载数据数据一般在13点10以后更新**
 
 1.安装环境
 
