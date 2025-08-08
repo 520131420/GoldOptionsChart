@@ -64,7 +64,7 @@ async function fetchAndSaveData(url) {
     console.log('请求成功，准备保存数据...');
 
     // 准备要写入的内容，格式化为JS模块导出形式
-    const fileContent = `// CME Group数据 - 抓取时间: ${new Date().toISOString()}
+    const fileContent = `// CME Group数据 - 抓取时间: ${new Date().toString()}
 const mockData = ${JSON.stringify(response.data, null, 2)};
 `;
 
@@ -72,7 +72,7 @@ const mockData = ${JSON.stringify(response.data, null, 2)};
     const filePath = path.join(__dirname, 'data.js');
 
     // 写入文件
-    await fs.writeFile(filePath, fileContent, 'utf8');
+    await fs.writeFile(filePath, `${fileContent}\nwindow.mockData = mockData`, 'utf8');
     console.log(`数据已成功保存到: "${filePath}"`);
 
     return response.data;

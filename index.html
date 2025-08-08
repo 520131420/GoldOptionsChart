@@ -9,7 +9,7 @@
   <!-- 引入 ECharts CDN -->
   <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
   <link rel="stylesheet" href="index.css">
-  <script src="data.js"></script>
+  <!-- <script src="data.js"></script> -->
 </head>
 
 <body>
@@ -78,7 +78,7 @@
   </div>
 
 
-  <script defer>
+  <script type="module">
     let minPrice = 3100;
     let maxPrice = 3800;
     let showStockLabels = true;
@@ -534,26 +534,22 @@
     }
 
     // 加载数据
-    function loadData() {
+    async function loadData() {
       // 创建新的script元素
       const script = document.createElement('script');
 
-      script.src = './data.js';
+      script.src = `./data.js?${new Date().valueOf()}`;
 
       // 可选：设置其他属性
       script.type = 'text/javascript';
-      script.async = false; // 异步加载
-      script.defer = false; // 不延迟执行
 
       // 将新创建的script标签添加到页面中
       document.head.appendChild(script);
     }
-
     // 页面初始化
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       try {
-        loadData();
-
+        await import(`./data.js?ts=${new Date().getTime()}`);
         updateCharts(200);
 
         // 保存期权图 

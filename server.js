@@ -77,7 +77,7 @@ try {
 }
 
 // 数据获取和保存函数
-async function fetchAndSaveData(url) {
+async function fetchAndSaveData(url, querycontractNum) {
   try {
     console.log('请求URL:', url);
     
@@ -112,10 +112,10 @@ const mockData = ${JSON.stringify(response.data, null, 2)};
 
     // 保存文件路径（带时间戳）
     const timestamp = new Date().toString().replace(/:/g, '-');
-    const filePath = path.join(dataDir, `data-${timestamp}.js`);
+    const filePath = path.join(dataDir, `data-${querycontractNum}-数据抓取时间${timestamp}.js`);
 
     // 写入文件
-    await fs.writeFile(filePath, fileContent, 'utf8');
+    await fs.writeFile(filePath, `${fileContent}\nwindow.mockData = mockData`, 'utf8');
     console.log(`数据已保存到: ${filePath}`);
 
     return {
@@ -191,7 +191,7 @@ app.post('/fetch-data', async (req, res) => {
     
     console.log('尝试获取合约:', queryContract);
     const url = await generateContractDataUrl(queryContract);
-    const result = await fetchAndSaveData(url);
+    const result = await fetchAndSaveData(url, numberValue);
     
     res.json(result);
   } catch (error) {
